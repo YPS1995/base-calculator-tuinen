@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>m&sup2; Price Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f5f5f5;
+    }
+
+    .calculator {
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .calculator label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .calculator input, .calculator select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .calculator button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .calculator button:hover {
+      background-color: #0056b3;
+    }
+
+    .result {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h2>m&sup2; Price Calculator</h2>
+
+    <label for="tileType">Soort tegel:</label>
+    <select id="tileType" onchange="applyPreset()">
+      <option value="">-- Kies een tegel --</option>
+      <option value="Serena Cream">Serena Cream</option>
+      <option value="Beige Nuance">Beige Nuance</option>
+      <option value="Urban Beige">Urban Beige</option>
+    </select>
+
+    <label for="length">Length (m):</label>
+    <input type="number" id="length" placeholder="Enter length" oninput="calculate()" />
+
+    <label for="width">Width (m):</label>
+    <input type="number" id="width" placeholder="Enter width" oninput="calculate()" />
+
+    <label for="pricePerM2">Price per m&sup2;:</label>
+    <input type="number" id="pricePerM2" placeholder="Enter price per m²" oninput="calculate()" />
+
+    <label for="unitPerBox">Geleverde eenheid (m&sup2; per doos):</label>
+    <input type="number" id="unitPerBox" placeholder="Bijv. 1.44" oninput="calculate()" />
+
+    <button onclick="calculate()">Calculate</button>
+    <button onclick="resetFields()">Reset</button>
+
+    <div class="result" id="output"></div>
+  </div>
+
+  <script>
+    const tilePresets = {
+      "Serena Cream": { price: 32.50, unit: 1.44 },
+      "Beige Nuance": { price: 27.50, unit: 2.16 },
+      "Urban Beige": { price: 48.95, unit: 1.08 },
+    };
+
+    function applyPreset() {
+      const tile = document.getElementById('tileType').value;
+      if (tilePresets[tile]) {
+        document.getElementById('pricePerM2').value = tilePresets[tile].price;
+        document.getElementById('unitPerBox').value = tilePresets[tile].unit;
+        calculate();
+      }
+    }
+
+    function calculate() {
+      const length = parseFloat(document.getElementById('length').value);
+      const width = parseFloat(document.getElementById('width').value);
+      const pricePerM2 = parseFloat(document.getElementById('pricePerM2').value);
+      const unitPerBox = parseFloat(document.getElementById('unitPerBox').value);
+
+      if (isNaN(length) || isNaN(width) || isNaN(pricePerM2) || isNaN(unitPerBox)) {
+        document.getElementById('output').innerText = 'Please fill in all fields with valid numbers.';
+        return;
+      }
+
+      if (length <= 0 || width <= 0 || pricePerM2 < 0 || unitPerBox <= 0) {
+        document.getElementById('output').innerText = 'Values must be greater than 0.';
+        return;
+      }
+
+      const area = length * width;
+      const totalPrice = Math.round(area * pricePerM2);
+      const boxes = Math.ceil(area / unitPerBox);
+
+      document.getElementById('output').innerHTML =
+        `Totaal oppervlak: ${area.toFixed(2)} m&sup2;<br>` +
+        `Benodigde dozen: ${boxes}<br>` +
+        `Totale prijs: &euro;${totalPrice}`;
+    }
+
+    function resetFields() {
+      document.getElementById('tileType').value = '';
+      document.getElementById('length').value = '';
+      document.getElementById('width').value = '';
+      document.getElementById('pricePerM2').value = '';
+      document.getElementById('unitPerBox').value = '';
+      document.getElementById('output').innerText = '';
+    }
+  </script>
+</body>
+</html>
+
